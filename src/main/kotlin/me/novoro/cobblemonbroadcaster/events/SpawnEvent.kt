@@ -13,6 +13,7 @@ import me.novoro.cobblemonbroadcaster.util.LangManager
 import me.novoro.cobblemonbroadcaster.util.LabelHelper
 import me.novoro.cobblemonbroadcaster.util.PlaceholderUtils
 import me.novoro.cobblemonbroadcaster.util.BlacklistedWorlds
+import me.novoro.cobblemonbroadcaster.util.PokemonUtil.hasSpawningProperty
 import me.novoro.cobblemonbroadcaster.util.SimpleLogger
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.server.network.ServerPlayerEntity
@@ -70,7 +71,7 @@ class SpawnEvent(private val config: Configuration) {
         // Dynamically check user-defined identifiers (aspects AND labels)
         config.keys.forEach { customCategory ->
             if (customCategory !in setOf("shiny", "legendary", "mythical", "ultrabeast")) {
-                if (customCategory in allIdentifiers) {
+                if (customCategory in allIdentifiers || pokemonEntity.hasSpawningProperty(customCategory)) {
                     if (handleCategory(pokemonEntity, spawnablePosition.spawner.name, customCategory, pos, isSnack) { true }) return
                 }
             }

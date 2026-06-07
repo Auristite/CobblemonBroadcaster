@@ -9,6 +9,7 @@ import me.novoro.cobblemonbroadcaster.config.Configuration
 import me.novoro.cobblemonbroadcaster.util.BlacklistedWorlds
 import me.novoro.cobblemonbroadcaster.util.LabelHelper
 import me.novoro.cobblemonbroadcaster.util.LangManager
+import me.novoro.cobblemonbroadcaster.util.PokemonUtil.hasSpawningProperty
 import me.novoro.cobblemonbroadcaster.util.SimpleLogger
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.world.ServerWorld
@@ -59,8 +60,8 @@ class FaintEvent(private val config: Configuration, private val server: Minecraf
             // Dynamically check user-defined aspects first
             config.keys.forEach { customCategory ->
                 if (customCategory !in setOf("shiny", "legendary", "mythical", "ultrabeast")) {
-                    if (customCategory in allIdentifiers) {
-                        if (handlePokemonCategory(pokemon, player.toString(),customCategory) { true }) return@subscribe
+                    if (customCategory in allIdentifiers || pokemon.hasSpawningProperty(customCategory)) {
+                        if (handlePokemonCategory(pokemon, player.toString(), customCategory) { true }) return@subscribe
                     }
                 }
             }

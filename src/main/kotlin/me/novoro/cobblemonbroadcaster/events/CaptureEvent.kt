@@ -10,6 +10,7 @@ import com.cobblemon.mod.common.pokemon.Pokemon
 import me.novoro.cobblemonbroadcaster.util.BlacklistedWorlds
 import me.novoro.cobblemonbroadcaster.util.LabelHelper
 import me.novoro.cobblemonbroadcaster.util.LangManager
+import me.novoro.cobblemonbroadcaster.util.PokemonUtil.hasSpawningProperty
 import me.novoro.cobblemonbroadcaster.util.SimpleLogger
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
@@ -45,7 +46,7 @@ class CaptureEvent(private val config: Configuration) {
             // Dynamically check user-defined aspects first
             config.keys.forEach { customCategory ->
                 if (customCategory !in setOf("shiny", "legendary", "mythical", "ultrabeast")) {
-                    if (customCategory in allIdentifiers) {
+                    if (customCategory in allIdentifiers || pokemon.hasSpawningProperty(customCategory)) {
                         if (handleCategory(pokemon, player, customCategory) { true }) return@subscribe
                     }
                 }
