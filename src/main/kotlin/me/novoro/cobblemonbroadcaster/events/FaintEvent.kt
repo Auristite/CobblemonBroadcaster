@@ -57,6 +57,13 @@ class FaintEvent(private val config: Configuration, private val server: Minecraf
 
             SimpleLogger.debug("Pokemon ${pokemon.species.name} killed by ${player.name.string} has aspects: $aspects, labels: $labels")
 
+            // Prioritise defaulted categories
+            // Check categories with guard clauses
+            if (handlePokemonCategory(pokemon, player.toString(), "mythical") { pokemon.isMythical() }) return@subscribe
+            if (handlePokemonCategory(pokemon, player.toString(), "legendary") { pokemon.isLegendary() }) return@subscribe
+            if (handlePokemonCategory(pokemon, player.toString(), "ultrabeast") { pokemon.isUltraBeast() }) return@subscribe
+            if (handlePokemonCategory(pokemon, player.toString(), "shiny") { pokemon.shiny }) return@subscribe
+
             // Dynamically check user-defined aspects first
             config.keys.forEach { customCategory ->
                 if (customCategory !in setOf("shiny", "legendary", "mythical", "ultrabeast")) {
@@ -65,12 +72,6 @@ class FaintEvent(private val config: Configuration, private val server: Minecraf
                     }
                 }
             }
-
-            // Check categories with guard clauses in priority order
-            if (handlePokemonCategory(pokemon, player.toString(), "mythical") { pokemon.isMythical() }) return@subscribe
-            if (handlePokemonCategory(pokemon, player.toString(),"legendary") { pokemon.isLegendary() }) return@subscribe
-            if (handlePokemonCategory(pokemon, player.toString(),"ultrabeast") { pokemon.isUltraBeast() }) return@subscribe
-            if (handlePokemonCategory(pokemon, player.toString(),"shiny") { pokemon.shiny }) return@subscribe
 
             // Add the Pokémon to the cache
             faintedPokemonCache.add(pokemon.uuid.toString())

@@ -1,6 +1,5 @@
 package me.novoro.cobblemonbroadcaster
 
-import com.cobblemon.mod.common.api.events.pokemon.FossilRevivedEvent
 import me.novoro.cobblemonbroadcaster.commands.BroadcastCommands
 import me.novoro.cobblemonbroadcaster.config.Configuration
 import me.novoro.cobblemonbroadcaster.config.YamlConfiguration

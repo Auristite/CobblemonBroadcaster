@@ -1,9 +1,9 @@
 package me.novoro.cobblemonbroadcaster.commands
 
-import me.novoro.cobblemonbroadcaster.CobblemonBroadcaster
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
+import me.novoro.cobblemonbroadcaster.CobblemonBroadcaster
 import me.novoro.cobblemonbroadcaster.util.Permissions
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource

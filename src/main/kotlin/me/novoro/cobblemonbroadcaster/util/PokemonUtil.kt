@@ -6,16 +6,19 @@ import com.cobblemon.mod.common.pokemon.Pokemon
 
 object PokemonUtil {
 
+    // Exclude default config labels
+    val excludedLabels = arrayOf("config-version", "shiny", "legendary", "mythical", "ultrabeast")
+
     fun Pokemon.hasSpawningProperty(properties: String = ""): Boolean {
-        if (properties.equals("config-version", true)) return false;
+        if (excludedLabels.contains(properties.lowercase())) return false
         val props = PokemonProperties.parse(properties, " ", "=")
         return props.matches(this)
     }
 
     fun PokemonEntity.hasSpawningProperty(properties: String = ""): Boolean {
-        if (properties.equals("config-version", true)) return false;
+        if (excludedLabels.contains(properties.lowercase())) return false
         val props = PokemonProperties.parse(properties, " ", "=")
-        return props.matches(this)
+        return props.matches(this.pokemon)
     }
 
 }

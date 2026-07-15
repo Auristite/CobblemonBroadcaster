@@ -43,6 +43,13 @@ class FossilEvent(private val config: Configuration) {
             // Debugging: Log all aspects of the Pokémon
             SimpleLogger.debug("Pokemon ${pokemon.species.name} revived by ${player.name.string} has aspects: $aspects, labels: $labels")
 
+            // Prioritise defaulted categories
+            // Check categories with guard clauses
+            if (handleCategory(pokemon, player, "mythical") { pokemon.isMythical() }) return@subscribe
+            if (handleCategory(pokemon, player, "legendary") { pokemon.isLegendary() }) return@subscribe
+            if (handleCategory(pokemon, player, "ultrabeast") { pokemon.isUltraBeast() }) return@subscribe
+            if (handleCategory(pokemon, player, "shiny") { pokemon.shiny }) return@subscribe
+
             // Dynamically check user-defined aspects first
             config.keys.forEach { customCategory ->
                 if (customCategory !in setOf("shiny", "legendary", "mythical", "ultrabeast")) {
@@ -51,12 +58,6 @@ class FossilEvent(private val config: Configuration) {
                     }
                 }
             }
-
-            // Check categories with guard clauses in priority order
-            if (handleCategory(pokemon, player, "mythical") { pokemon.isMythical() }) return@subscribe
-            if (handleCategory(pokemon, player, "legendary") { pokemon.isLegendary() }) return@subscribe
-            if (handleCategory(pokemon, player, "ultrabeast") { pokemon.isUltraBeast() }) return@subscribe
-            if (handleCategory(pokemon, player, "shiny") { pokemon.shiny }) return@subscribe
         }
     }
 

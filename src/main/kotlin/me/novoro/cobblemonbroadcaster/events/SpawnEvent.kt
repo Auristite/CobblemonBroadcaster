@@ -1,6 +1,5 @@
 package me.novoro.cobblemonbroadcaster.events
 
-import me.novoro.cobblemonbroadcaster.config.Configuration
 import com.cobblemon.mod.common.api.Priority
 import com.cobblemon.mod.common.api.events.CobblemonEvents
 import com.cobblemon.mod.common.api.events.cooking.PokeSnackSpawnPokemonEvent
@@ -9,17 +8,14 @@ import com.cobblemon.mod.common.api.pokemon.aspect.AspectProvider
 import com.cobblemon.mod.common.api.reactive.ObservableSubscription
 import com.cobblemon.mod.common.api.spawning.position.SpawnablePosition
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
-import me.novoro.cobblemonbroadcaster.util.LangManager
-import me.novoro.cobblemonbroadcaster.util.LabelHelper
-import me.novoro.cobblemonbroadcaster.util.PlaceholderUtils
-import me.novoro.cobblemonbroadcaster.util.BlacklistedWorlds
+import me.novoro.cobblemonbroadcaster.config.Configuration
+import me.novoro.cobblemonbroadcaster.util.*
 import me.novoro.cobblemonbroadcaster.util.PokemonUtil.hasSpawningProperty
-import me.novoro.cobblemonbroadcaster.util.SimpleLogger
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos
 
 class SpawnEvent(private val config: Configuration) {
 
@@ -68,6 +64,13 @@ class SpawnEvent(private val config: Configuration) {
         // Debugging: Log all aspects of the Pokémon
         SimpleLogger.debug("Pokemon ${pokemonEntity.pokemon.species.name} spawned by ${spawnablePosition.spawner.name} has aspects: $aspects, labels: $label")
 
+        // Prioritise defaulted categories
+        // Check categories with guard clauses
+        if (handleCategory(pokemonEntity, spawnablePosition.spawner.name, "mythical", pos, isSnack) { pokemonEntity.pokemon.isMythical() }) return
+        if (handleCategory(pokemonEntity, spawnablePosition.spawner.name, "legendary", pos, isSnack) { pokemonEntity.pokemon.isLegendary() }) return
+        if (handleCategory(pokemonEntity, spawnablePosition.spawner.name, "ultrabeast", pos, isSnack) { pokemonEntity.pokemon.isUltraBeast() }) return
+        if (handleCategory(pokemonEntity, spawnablePosition.spawner.name, "shiny", pos, isSnack) { pokemonEntity.pokemon.shiny }) return
+
         // Dynamically check user-defined identifiers (aspects AND labels)
         config.keys.forEach { customCategory ->
             if (customCategory !in setOf("shiny", "legendary", "mythical", "ultrabeast")) {
@@ -76,11 +79,6 @@ class SpawnEvent(private val config: Configuration) {
                 }
             }
         }
-
-        if (handleCategory(pokemonEntity, spawnablePosition.spawner.name, "mythical", pos, isSnack) { pokemonEntity.pokemon.isMythical() }) return
-        if (handleCategory(pokemonEntity, spawnablePosition.spawner.name, "legendary", pos, isSnack) { pokemonEntity.pokemon.isLegendary() }) return
-        if (handleCategory(pokemonEntity, spawnablePosition.spawner.name, "ultrabeast", pos, isSnack) { pokemonEntity.pokemon.isUltraBeast() }) return
-        if (handleCategory(pokemonEntity, spawnablePosition.spawner.name, "shiny", pos, isSnack) { pokemonEntity.pokemon.shiny }) return
     }
 
     private fun handleCategory(
